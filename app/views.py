@@ -17,7 +17,7 @@ import os
 # Routing for your application.
 ###
 
-@app.route(' /api/upload', methods=['POST', 'GET'])
+@app.route('/api/upload', methods=['POST'])
 def upload():
     form = UploadForm()
     
@@ -25,7 +25,7 @@ def upload():
         # Get file data and save to your uploads folder
         description = form.description.data
         
-        file = form.upload.data
+        file = form.photo.data
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
         
@@ -42,7 +42,7 @@ def upload():
     for error in form_errors(form):
         errors.append(dict({'error':error}))
     
-    return jsonify({'Errors':errors})
+    return jsonify({'errors':errors})
     
 
 

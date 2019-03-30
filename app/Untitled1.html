@@ -1,0 +1,21 @@
+
+        <h1>Upload Form</h1>
+        <!--<form>-->
+        <!--        <label for="">Description</label>-->
+                
+        <!--</form>-->
+        
+        <form @submit.prevent="uploadPhoto" enctype = "multipart/form-data" method = 'POST' role = 'form'>
+        
+          <!--{{ form.csrf_token }}-->
+          
+          <div class="form-group">
+            {{ form.description.label }}
+            {{ form.description }}
+            
+            {{ form.upload.label }}
+            {{ form.upload }}
+          </div>
+          
+          <button type="submit" name="submit" class="btn btn-primary">Upload file</button>
+        </form>
