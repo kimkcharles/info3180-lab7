@@ -49,13 +49,26 @@ const upload_form = Vue.component('upload-form', {
     <div class="uform">
         <h1>Upload Form</h1>
         
+        <div v-if = "errors.length > 0">
+            <ul class = "alert-danger">
+                <li v-for = "error in errors">
+                    {{error}}
+                </li>
+            </ul> 
+        </div>
+        <div v-else class = "alert-success">
+            {{response.message}}
+        </div>
+            
+        
+        
         <form @submit.prevent="uploadPhoto" id="uploadForm" enctype = "multipart/form-data" method = 'POST' role = 'form'>
             <br><br>
             <label for = 'description'><h5>Description</h5></label>
             <textarea id = 'description' class = 'form-control' name = 'description'></textarea>
             <br>
             <label for = 'photo'><h5>Photograph</h5></label>
-            <input type = 'file' class="b_y" id = 'photo' name = 'photo'>
+            <input type = 'file' class='form-control' id = 'photo' name = 'photo'>
             <br>
             <input type = 'submit' class="btn btn-primary">
         
@@ -64,10 +77,19 @@ const upload_form = Vue.component('upload-form', {
     </div>
    `,
    
+    data: function() {
+       return {
+           response: {},
+           errors:[]
+           
+       }
+       
+    },
+    
     methods: {
       uploadPhoto: function() {
+          let self = this;
           let uploadForm = document.getElementById('uploadForm');
-          
           let form_data = new FormData(uploadForm);
           
           fetch("/api/upload", {
@@ -82,8 +104,16 @@ const upload_form = Vue.component('upload-form', {
                 return response.json();
             })
             .then(function (jsonResponse) {
-                // display a success message
-                console.log(jsonResponse);
+                if (jsonResponse.Errors == null){
+                    self.response = jsonResponse;
+                    self.errors = [];
+                    uploadForm.reset() //Reset the form after a successful upload
+                    console.log(self.response)
+                }
+                else{
+                    self.errors = jsonResponse.Errors; 
+                    console.log(self.errors)
+                }
             })
             .catch(function (error) {
                 console.log(error);
@@ -91,11 +121,8 @@ const upload_form = Vue.component('upload-form', {
             
         }
         
-    },
-   
-    data: function() {
-       return {}
     }
+   
 });
 
 

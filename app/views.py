@@ -6,10 +6,10 @@ This file creates your application.
 """
 
 from app import app
-from flask import render_template, request
-from flask import jsonify
+from flask import render_template, request, jsonify
 from app.forms import UploadForm
 from werkzeug.utils import secure_filename
+
 import os
 
 
@@ -21,29 +21,24 @@ import os
 def upload():
     form = UploadForm()
     
-    if request.method == 'POST'  and form.validate_on_submit:
-        # Get file data and save to your uploads folder
-        description = form.description.data
-        
-        file = form.photo.data
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
-        
-        
-        photo_dets = {"message":"File Upload Successful",
-                     "filename":filename,
-                     "description":description
-                    }
-                    
-        return jsonify(photo_dets)
-        
-    #if its not a post request  
-    errors= []
-    for error in form_errors(form):
-        errors.append(dict({'error':error}))
-    
-    return jsonify({'errors':errors})
-    
+    if request.method == "POST":
+        if form.validate_on_submit():
+            description = form.description.data
+            photo = request.files['photo']
+            filename = secure_filename(photo.filename)
+            
+            photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return jsonify(
+                    message = "File Upload Successful",
+                    filename = filename,
+                    description = description
+                    )
+                
+        return jsonify(
+                {"Errors": form_errors(form)}
+                )
+
+
 
 
 # Please create all new routes and view functions above this route.
